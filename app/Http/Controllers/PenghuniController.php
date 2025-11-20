@@ -653,6 +653,10 @@ class PenghuniController extends Controller
 
     public function exportExcel(Request $request)
     {
+        $temp_dir = sys_get_temp_dir();
+        config(['excel.temporary_files.local_path' => $temp_dir]);
+        config(['excel.temporary_files.remote_disk' => null]);
+
         $fileName = 'Data Penghuni ' . now()->format('Ymd_His') . '.xlsx';
         
         return Excel::download(new PenghuniExport($request), $fileName);

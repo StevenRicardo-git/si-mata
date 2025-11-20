@@ -8,9 +8,9 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>@yield('title', 'Dashboard') - SI-MATA</title>
-    <img src="{{ asset('images/simata.png') }}">
-    <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/simata.png') }}">
+    <link rel="shortcut icon" href="{{ asset('images/simata.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/simata.png') }}">
 
     <script>
         (function() {

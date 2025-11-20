@@ -15,66 +15,6 @@ use App\Http\Controllers\DisperkimController;
 use App\Helpers\TerbilangHelper;
 use Illuminate\Support\Facades\Artisan;
 
-
-Route::get('/reset-db', function () {
-    $output = "<h1>⚠️ DATABASE RESET & SEED (PLUS DISPERKIM)</h1>";
-
-    try {
-        Artisan::call('config:clear');
-        Artisan::call('cache:clear');
-        
-        Artisan::call('migrate:fresh', [
-            '--seed' => true,
-            '--force' => true
-        ]);
-        $output .= "<p style='color:green'>✅ Reset & DatabaseSeeder Selesai.</p>";
-
-        Artisan::call('db:seed', [
-            '--class' => 'DisperkimSeeder',
-            '--force' => true
-        ]);
-        $output .= "<p style='color:green'>✅ DisperkimSeeder Selesai.</p>";
-        
-        $output .= "<h2 style='color:green'>🎉 SUKSES TOTAL!</h2>";
-        $output .= "<h3>Log Output:</h3>";
-        $output .= "<pre>" . Artisan::output() . "</pre>";
-
-    } catch (\Exception $e) {
-        $output .= "<h2 style='color:red'>❌ GAGAL</h2>";
-        $output .= "<p>Error: " . $e->getMessage() . "</p>";
-    }
-
-    return $output;
-});
-
-Route::get('/cek-env', function () {
-    header('Content-Type: text/plain');
-    
-    echo "--- DIAGNOSA MENTAH ---\n";
-
-    $db_conn = getenv('DB_CONNECTION');
-    $db_host = getenv('DB_HOST');
-    
-    if (!$db_conn) {
-        echo "STATUS: ❌ BAHAYA! Variable Kosong.\n";
-        echo "Vercel tidak mengirim data apapun.\n";
-    } else {
-        echo "STATUS: ✅ AMAN! Data terbaca.\n";
-        echo "DB_CONNECTION: " . $db_conn . "\n";
-        echo "DB_HOST: " . $db_host . "\n";
-    }
-
-    echo "\n--- ISI CONFIG LARAVEL ---\n";
-    echo "Default Database: " . config('database.default') . "\n";
-    
-    echo "\n--- NEXT STEP ---\n";
-    if ($db_conn == 'pgsql') {
-         echo "Silakan jalankan route '/reset-db' (buat route baru lagi nanti) untuk migrasi.";
-    } else {
-         echo "Cek file vercel.json kamu lagi!";
-    }
-});
-
 Route::redirect('/', '/login');
 
 Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
