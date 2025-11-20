@@ -275,6 +275,15 @@ class DashboardController extends Controller
         $lastMonth = $today->copy()->subMonth();
         $filterBulan = $request->get('filter_bulan', $thisMonth);
         $filterTahun = $request->get('filter_tahun', $thisYear);
+        $isPostgres = DB::connection()->getDriverName() === 'pgsql';
+        
+        if ($isPostgres) {
+            $sqlDiffUnder60 = "DATE_PART('day', created_at - tanggal_masuk) <= 60";
+            $sqlDiffOver60 = "DATE_PART('day', created_at - tanggal_masuk) > 60";
+        } else {
+            $sqlDiffUnder60 = "DATEDIFF(created_at, tanggal_masuk) <= 60";
+            $sqlDiffOver60 = "DATEDIFF(created_at, tanggal_masuk) > 60";
+        }
         $allPossibleUnits = $this->generateAllPossibleUnits();
         $totalUnitSeharusnya = count($allPossibleUnits);
         $startOfMonth = $today->copy()->startOfMonth();
@@ -403,34 +412,34 @@ class DashboardController extends Controller
         $todayEnd = $today->copy()->endOfDay();
         
         $kontrakDiperbaruiCount = Kontrak::where('status', 'aktif')
-            ->where(function($q) use ($thirtyDaysAgo, $todayEnd) {
-                $q->where(function($sub) use ($thirtyDaysAgo, $todayEnd) {
+            ->where(function($q) use ($thirtyDaysAgo, $todayEnd, $sqlDiffUnder60, $sqlDiffOver60) {
+                $q->where(function($sub) use ($thirtyDaysAgo, $todayEnd, $sqlDiffUnder60) {
                     $sub->whereBetween('created_at', [$thirtyDaysAgo, $todayEnd])
-                        ->whereRaw('DATEDIFF(created_at, tanggal_masuk) <= 60');
+                        ->whereRaw($sqlDiffUnder60);
                 })
-                ->orWhere(function($sub) use ($thirtyDaysAgo, $todayEnd) {
+                ->orWhere(function($sub) use ($thirtyDaysAgo, $todayEnd, $sqlDiffOver60) {
                     $sub->whereBetween('tanggal_masuk', [$thirtyDaysAgo, $todayEnd])
-                        ->whereRaw("DATE_PART('day', created_at - tanggal_masuk) > 60");
+                        ->whereRaw($sqlDiffOver60);
                 });
             })
             ->count();
             
         $kontrakDiperbarui = Kontrak::with(['penghuni', 'unit'])
             ->where('status', 'aktif')
-            ->where(function($q) use ($thirtyDaysAgo, $todayEnd) {
-                $q->where(function($sub) use ($thirtyDaysAgo, $todayEnd) {
+            ->where(function($q) use ($thirtyDaysAgo, $todayEnd, $sqlDiffUnder60, $sqlDiffOver60) {
+                $q->where(function($sub) use ($thirtyDaysAgo, $todayEnd, $sqlDiffUnder60) {
                     $sub->whereBetween('created_at', [$thirtyDaysAgo, $todayEnd])
-                        ->whereRaw('DATEDIFF(created_at, tanggal_masuk) <= 60');
+                        ->whereRaw($sqlDiffUnder60);
                 })
-                ->orWhere(function($sub) use ($thirtyDaysAgo, $todayEnd) {
+                ->orWhere(function($sub) use ($thirtyDaysAgo, $todayEnd, $sqlDiffOver60) {
                     $sub->whereBetween('tanggal_masuk', [$thirtyDaysAgo, $todayEnd])
-                        ->whereRaw("DATE_PART('day', created_at - tanggal_masuk) > 60");
+                        ->whereRaw($sqlDiffOver60);
                 });
             })
-            ->orderByRaw('CASE 
-                WHEN DATEDIFF(created_at, tanggal_masuk) <= 60 THEN created_at 
+            ->orderByRaw("CASE 
+                WHEN $sqlDiffUnder60 THEN created_at 
                 ELSE tanggal_masuk 
-            END DESC')
+            END DESC")
             ->limit(5)
             ->get();
         
