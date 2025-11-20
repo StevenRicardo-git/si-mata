@@ -13,6 +13,16 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\BlacklistController;
 use App\Http\Controllers\DisperkimController;
 use App\Helpers\TerbilangHelper;
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/jalankan-migrasi', function () {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        return '<h1>Sukses! 🎉</h1><p>Database berhasil di-migrate.</p><pre>' . Artisan::output() . '</pre>';
+    } catch (\Exception $e) {
+        return '<h1>Gagal 😭</h1><p>' . $e->getMessage() . '</p>';
+    }
+});
 
 Route::redirect('/', '/login');
 
