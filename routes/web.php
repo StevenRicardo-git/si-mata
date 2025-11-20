@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Artisan;
 
 
 Route::get('/reset-db', function () {
-    $output = "<h1>⚠️ DATABASE RESET & SEED</h1>";
+    $output = "<h1>⚠️ DATABASE RESET & SEED (PLUS DISPERKIM)</h1>";
 
     try {
         Artisan::call('config:clear');
@@ -27,10 +27,15 @@ Route::get('/reset-db', function () {
             '--seed' => true,
             '--force' => true
         ]);
+        $output .= "<p style='color:green'>✅ Reset & DatabaseSeeder Selesai.</p>";
+
+        Artisan::call('db:seed', [
+            '--class' => 'DisperkimSeeder',
+            '--force' => true
+        ]);
+        $output .= "<p style='color:green'>✅ DisperkimSeeder Selesai.</p>";
         
-        $output .= "<h2 style='color:green'>✅ SUKSES TOTAL!</h2>";
-        $output .= "<p>Tabel Database sudah dibuat ulang.</p>";
-        $output .= "<p>Data Seeder (User Login) sudah dimasukkan.</p>";
+        $output .= "<h2 style='color:green'>🎉 SUKSES TOTAL!</h2>";
         $output .= "<h3>Log Output:</h3>";
         $output .= "<pre>" . Artisan::output() . "</pre>";
 

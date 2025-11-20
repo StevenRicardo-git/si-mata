@@ -410,7 +410,7 @@ class DashboardController extends Controller
                 })
                 ->orWhere(function($sub) use ($thirtyDaysAgo, $todayEnd) {
                     $sub->whereBetween('tanggal_masuk', [$thirtyDaysAgo, $todayEnd])
-                        ->whereRaw('DATEDIFF(created_at, tanggal_masuk) > 60');
+                        ->whereRaw("DATE_PART('day', created_at - tanggal_masuk) > 60");
                 });
             })
             ->count();
@@ -424,7 +424,7 @@ class DashboardController extends Controller
                 })
                 ->orWhere(function($sub) use ($thirtyDaysAgo, $todayEnd) {
                     $sub->whereBetween('tanggal_masuk', [$thirtyDaysAgo, $todayEnd])
-                        ->whereRaw('DATEDIFF(created_at, tanggal_masuk) > 60');
+                        ->whereRaw("DATE_PART('day', created_at - tanggal_masuk) > 60");
                 });
             })
             ->orderByRaw('CASE 
