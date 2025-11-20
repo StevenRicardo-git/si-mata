@@ -276,6 +276,7 @@ class DashboardController extends Controller
         $filterBulan = $request->get('filter_bulan', $thisMonth);
         $filterTahun = $request->get('filter_tahun', $thisYear);
         $isPostgres = DB::connection()->getDriverName() === 'pgsql';
+        $castType = $isPostgres ? 'INTEGER' : 'UNSIGNED';
         
         if ($isPostgres) {
             $sqlDiffUnder60 = "DATE_PART('day', created_at - tanggal_masuk) <= 60";
@@ -525,10 +526,10 @@ class DashboardController extends Controller
                 foreach ($lantaiRanges as $lantai => $range) {
                     $kontrakLantai = Kontrak::with('unit')
                         ->where('status', 'aktif')
-                        ->whereHas('unit', function($q) use ($blok, $range) {
+                        ->whereHas('unit', function($q) use ($blok, $range, $castType) {
                             $q->where('kode_unit', 'LIKE', $blok . '%')
-                              ->whereRaw('CAST(SUBSTRING(kode_unit, 2) AS UNSIGNED) >= ?', [$range['start']])
-                              ->whereRaw('CAST(SUBSTRING(kode_unit, 2) AS UNSIGNED) <= ?', [$range['end']]);
+                                ->whereRaw("CAST(SUBSTRING(kode_unit, 2) AS $castType) >= ?", [$range['start']])
+                                ->whereRaw("CAST(SUBSTRING(kode_unit, 2) AS $castType) <= ?", [$range['end']]);
                         })
                         ->get();
                     
