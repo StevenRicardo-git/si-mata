@@ -1,0 +1,160 @@
+Panduan Lengkap Sistem Informasi Manajemen Rusunawa (SIMATA)
+
+Selamat datang di SIMATA, sistem untuk mengelola rusunawa dengan mudah. Sistem ini membantu Anda melihat data penghuni, unit, kontrak, dan potensi pendapatan. Hanya memerlukan koneksi internet dengan skala kecil untuk sebagian besar fitur dan grafik yang menggunakan layanan eksternal.
+
+Aplikasi ini dibuat untuk memudahkan pengelola rusunawa dalam:
+- Melihat ringkasan data harian
+- Mengelola data penghuni
+- Melacak kontrak dan laporan
+
+Menu Utama:
+- Dashboard: Halaman utama dengan ringkasan data rusunawa
+- Penghuni: Kelola data orang yang tinggal di rusunawa
+- Unit: Kelola unit rusunawa
+- Kontrak: Kelola perjanjian sewa-menyewa
+- Blacklist: Kelola daftar penghuni yang diblacklist dari rusunawa
+- Jejak Audit: Lihat jejak aktivitas sistem yang telah dilakukan
+
+1. Fitur Dashboard:
+Dashboard menampilkan gambaran cepat kondisi rusunawa saat ini.
+
+*Kartu Statistik Utama:
+- Jumlah penghuni yang aktif sekarang
+- Berapa unit yang sudah ditempati dari total unit
+- Perkiraan potensi retribusi yang akan masuk bulan ini, dengan perbandingan bulan lalu
+- Perkiraan potensi retribusi bulan depan, dengan perbandingan bulan ini
+Catatan: Klik kartu untuk melihat detail lebih lanjut.
+
+*Tabel Penghuni Aktif per Periode:
+- Pilih bulan dan tahun untuk melihat siapa saja yang aktif di periode itu
+- Tabel menunjukkan nama, NIK, blok, unit, tanggal masuk dan keluar, keringanan jika mendapatkan, dan total uang sewa
+
+*Potensi Pendapatan per Blok:
+- Kartu untuk setiap blok (A sampai D) menunjukkan persentase hunian, jumlah unit terisi, dan rincian per lantai
+Catatan: Klik kartu blok untuk lihat penghuni di blok tersebut
+
+*Grafik:
+- Lingkaran: persentase hunian per blok dan jumlah laki-laki dan perempuan
+- Batang: potensi pendapatan per blok dan distribusi umur penghuni beserta keluarga/pengikut
+
+*Aktivitas Kontrak:
+- Kontrak baru dalam 30 hari terakhir
+- Kontrak yang sudah lewat waktu
+- Kontrak yang akan berakhir dalam 30 hari
+Catatan: Klik nama untuk lihat detail
+
+*Penghuni Baru:
+- Daftar orang yang baru masuk, dengan info lengkap
+Catatan: Klik detail untuk lihat profil lengkap penghuni
+
+2. Fitur Manajemen Penghuni:
+Halaman ini untuk mengatur data penghuni dengan berbagai cara mencari dan menyaring(filter).
+
+*Tombol Utama:
+- Unduh data ke Excel: Simpan data dalam file Excel
+- Unggah dari Excel: Tambah data banyak dari file Excel
+- Tambah Penghuni: Buat data penghuni baru
+
+*Filter Kontrak yang Akan Berakhir:
+- Klik area filter kontrak berakhir untuk buka pilihan
+- Pilih hari (15, 30, 60, 90 hari) untuk lihat kontrak mendekati akhir
+- Pilih bulan atau tahun tertentu untuk kontrak berakhir di periode tertentu
+- Klik reset untuk hapus filter
+
+*Cari Penghuni:
+- Ketik nama atau NIK di kotak cari
+- Pencarian otomatis setelah 1 detik tanpa interupsi
+- Tekan enter untuk cari cepat, atau esc(ape) untuk reset
+- Hapus semua isi pada bilah pencarian untuk memunculkan data awal
+
+*Filter Status:
+- Pilih aktif, atau sudah keluar. Bawaan: semua
+
+*Filter Blok:
+- Klik tombol blok A, B, C, D. Bawaan: semua
+
+*Pengaturan Tampilan:
+- Pilih berapa data per halaman (10, 25, 50, 100) yang ingin ditampilkan
+- Navigasi halaman dengan tombol sebelumnya dan selanjutnya
+
+*Tabel Data Penghuni:
+- Menampilkan blok, lantai, nama, jenis kelamin, NIK, tanggal masuk/keluar, potongan harga, dan jumlah uang sewa
+- Tombol aksi: lihat detail, cetak surat izin sewa (untuk yang aktif), atau buat berita acara keluar (untuk yang sudah keluar)
+
+#Cara Pakai Lengkap:
+a. Lihat data normal: Buka halaman tanpa saringan(filter)
+b. Cari penghuni: Ketik nama atau NIK
+c. Filter kontrak berakhir terdekat: Gunakan filter hari, akan berakhir dalam 15/30/60/90 hari
+d. Filter periode: Gunakan filter bulan/tahun untuk fokus pada periode tertentu.
+    Note: Bulan akan menyaring pada tahun saat ini. Tahun akan memberikan semua data selama setahun 
+e. Filter blok: Klik tombol blok untuk fokus pada penghuni blok tertentu
+f. Unduh data (Export Excel): Klik export Excel dengan/tanpa saringan(filter) yang aktif
+g. Unggah data (Import Excel): Gunakan import Excel untuk menambahkan data penghuni sekaligus
+h. Lihat detail penghuni: Klik nama atau tombol detail
+i. Cetak dokumen: Gunakan tombol surat izin sewa (Surat SIP) atau berita acara keluar (Surat BA-Keluar) sesuai status
+
+3. Fitur Manajemen Unit:
+Halaman ini untuk mengelola data unit rusunawa, termasuk melihat detail penghuni yang pernah menghuni unit tersebut.
+
+*Tabel Data Unit:
+- Menampilkan blok, lantai, kode unit, status (tersedia/terisi), nama penghuni aktif beserta nik(jika menghuni)
+- Klik kode unit pada kolom blok untuk masuk ke detail unit, yang menampilkan riwayat penghuni yang pernah menghuni unit tersebut, termasuk nama, NIK, tanggal masuk, tanggal keluar, dan status kontrak
+
+*Cari Unit:
+- Ketik kode unit di kotak cari
+- Ketik nama atau nik di kotak cari
+- Pencarian otomatis setelah 1 detik tanpa interupsi
+
+*Filter Blok:
+- Klik tombol blok A, B, C, D. Bawaan: semua
+
+*Filter Status:
+- Pilih tersedia atau terisi. Bawaan: semua
+
+*Pengaturan Tampilan:
+- Pilih berapa data per halaman (25, 50, 100)
+- Navigasi halaman dengan tombol sebelumnya dan selanjutnya
+
+#Cara Pakai Lengkap:
+a. Lihat data unit: Buka halaman tanpa filter
+b. Cari unit: Ketik kode unit/nama/nik
+c. Filter blok: Klik tombol blok untuk fokus pada unit blok tertentu
+d. Filter status: Pilih tersedia atau terisi untuk fokus pada unit dengan status tertentu
+e. Lihat detail unit dan riwayat penghuni: Klik kode unit pada kolom blok
+
+4. Fitur Manajemen Blacklist:
+Halaman ini untuk mengelola daftar penghuni yang diblacklist karena pelanggaran, mengundurkan diri, atau dengan alasan tertentu.
+
+*Tombol Utama:
+- Tambah ke Blacklist: Masukkan data penghuni yang sudah ada/baru ke daftar blacklist
+
+*Cari data yang di-blacklist:
+- Ketik nama atau NIK di kotak cari
+- Pencarian otomatis setelah 1 detik tanpa interupsi
+
+*Tabel Data Blacklist:
+- Menampilkan nama, NIK, alasan blacklist, tanggal blacklist, status, alasan aktivasi, aksi
+- Tombol aksi: Aktifkan (Mengaktifkan kembali data penghuni)
+
+#Cara Pakai Lengkap:
+a. Lihat daftar blacklist: Buka halaman utama dari daftar
+b. Cari penghuni blacklist: Ketik nama atau NIK
+c. Tambah penghuni ke blacklist: Klik tombol tambah dan isi form
+d. Lihat detail: Klik nama atau tombol detail
+e. Aktifkan: Mengaktifkan kembali data penghuni
+
+5.Fitur Jejak Audit:
+Halaman ini untuk melihat jejak aktivitas sistem, seperti perubahan data, waktu perubahan, nama pengguna yang mengubah, dll.
+
+*Tabel Jejak Audit:
+- Menampilkan tanggal beserta waktu, pengguna, aksi, data terkait perubahan, aksi
+- Klik lihat detail untuk lihat perubahan lengkap
+
+#Cara Pakai Lengkap:
+a. Lihat semua audit: Buka halaman utama
+e. Lihat detail perubahan: Klik tombol detail pada baris
+
+##Kontak Support:
+- Menu tersembunyi untuk hubungi dukungan
+- Di samping kiri tombol logout (setelah kursor mouse ke tombol logout (jangan klik tombol logout dulu), langsung geser kursor mouse ke kiri), ada berbagai opsi untuk menghubungi Tim Development
+- Media sosial pengembang: Instagram, WhatsApp, dll.

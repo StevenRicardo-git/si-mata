@@ -1,0 +1,108 @@
+.unit-status-container {
+    display: grid;
+    grid-template-columns: 130px 90px 150px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    margin-left: 4.5rem;
+}
+
+.status-badge-wrapper {
+    grid-column: 2;
+    display: flex;
+    justify-content: center;
+}
+
+.unit-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    width: 90px;
+    height: 32px;
+}
+
+.unit-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 0.5rem;
+    height: 32px;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.btn-detail {
+    grid-column: 1;
+}
+
+.btn-add {
+    grid-column: 3;
+}
+
+.status-tersedia {
+    color: #065f46;
+    background-color: #d1fae5;
+}
+
+.status-terisi {
+    color: #991b1b;
+    background-color: #fee2e2;
+}
+
+.status-perbaikan {
+    color: #f8ff2e;
+    background-color: #fef3c7;
+}
+
+.status-unknown {
+    color: #4b5563;
+    background-color: #f3f4f6;
+}
+
+.btn-detail {
+    background-color: #3949ab;
+    color: white;
+}
+
+.btn-detail:hover {
+    background-color: #303f9f;
+}
+
+.btn-add {
+    background-color: #3949ab;
+    color: white;
+}
+
+.btn-add:hover {
+    background-color: #303f9f;
+}
+
+.unit-status-container > * {
+    margin: 0;
+}
+
+#statusFilter option[value="tersedia"] {
+    color: #065f46;
+    background-color: #d1fae5;
+    font-weight: 600;
+}
+
+#statusFilter option[value="terisi"] {
+    color: #991b1b;
+    background-color: #fee2e2;
+    font-weight: 600;
+}
+
+#statusFilter option[value="perbaikan"] {
+    color: #f8ff2e;
+    background-color: #f5cb27;
+    font-weight: 600;
+}

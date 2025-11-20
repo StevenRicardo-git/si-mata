@@ -1,0 +1,266 @@
+.modal-content {
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+#addKontrakModal .modal-content,
+#terminateModal .modal-content,
+#addKeluargaModal .modal-content,
+#editKeluargaModal .modal-content,
+#deleteKeluargaModal .modal-content,
+#blacklistModal .modal-content,
+#reactivateModal .modal-content {
+    display: block;
+}
+
+#addKontrakModal form,
+#terminateModal form,
+#addKeluargaModal form,
+#editKeluargaModal form,
+#deleteKeluargaModal form,
+#blacklistModal form,
+#reactivateModal form {
+    display: block;
+}
+
+#addKontrakModal .flex.gap-3,
+#terminateModal .flex.gap-3,
+#addKeluargaModal .flex.gap-3,
+#editKeluargaModal .flex.gap-3,
+#deleteKeluargaModal .flex.gap-3,
+#blacklistModal .flex.gap-3,
+#reactivateModal .flex.gap-3 {
+    display: flex !important;
+    margin-top: 1.5rem !important;
+    width: 100% !important;
+    position: relative !important;
+    clear: both !important;
+}
+
+@keyframes slideDownCatatan {
+    0% {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-30px);
+        margin-top: 0;
+    }
+    100% {
+        opacity: 1;
+        max-height: 500px;
+        transform: translateY(0);
+        margin-top: 1rem;
+    }
+}
+
+@keyframes slideUpCatatan {
+    0% {
+        opacity: 1;
+        max-height: 500px;
+        transform: translateY(0);
+        margin-top: 1rem;
+    }
+    100% {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-30px);
+        margin-top: 0;
+    }
+}
+
+.catatan-field {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+}
+
+.catatan-field.show {
+    animation: slideDownCatatan 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.catatan-field.hide {
+    animation: slideUpCatatan 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.rusun-box,
+.blok-box {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.rusun-box:not(:disabled):hover,
+.blok-box:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rusun-box:disabled,
+.blok-box:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        min-width: 1200px;
+    }
+}
+
+.badge-gender-male {
+    background-color: #DBEAFE;
+    color: #1E40AF;
+}
+
+.badge-gender-female {
+    background-color: #FCE7F3;
+    color: #BE185D;
+}
+
+.overflow-x-auto thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+    height: 8px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.rusun-box.selected,
+.blok-box.selected {
+    border-color: #2b398b !important;
+    background-color: #eff6ff !important;
+    box-shadow: 0 0 0 3px rgba(43, 57, 139, 0.1);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #2b398b;
+    box-shadow: 0 0 0 3px rgba(43, 57, 139, 0.1);
+}
+
+[title] {
+    position: relative;
+}
+
+select option {
+    padding: 8px;
+}
+
+select optgroup {
+    font-weight: 600;
+    color: #374151;
+    background-color: #f9fafb;
+}
+
+@keyframes fadeInBackdrop {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-slideUp {
+    animation: fadeIn 0.3s ease-out;
+}
+
+button:not(:disabled):hover,
+a.button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:not(:disabled):active,
+a.button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.status-aktif {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+
+.status-selesai {
+    background-color: #E5E7EB;
+    color: #374151;
+}
+
+.keringanan-dapat {
+    background-color: #DBEAFE;
+    color: #1E40AF;
+}
+
+.keringanan-tidak {
+    background-color: #FEE2E2;
+    color: #991B1B;
+}
+
+.keringanan-normal {
+    background-color: #E5E7EB;
+    color: #4B5563;
+}
+
+@media (max-width: 640px) {
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
