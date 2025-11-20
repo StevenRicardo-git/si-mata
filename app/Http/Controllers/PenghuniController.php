@@ -1117,22 +1117,31 @@ class PenghuniController extends Controller
             'file' => 'required|mimes:xlsx,xls|max:5120',
         ]);
 
+        $file = $request->file('file');
+        
+        if (!$file || !$file->isValid()) {
+            return back()->with('error', 'File tidak valid atau corrupt!');
+        }
+
+        $nama_file = rand() . '_' . $file->getClientOriginalName();
+        $temp_dir = sys_get_temp_dir();
+        $file->move($temp_dir, $nama_file);
+        $path = $temp_dir . DIRECTORY_SEPARATOR . $nama_file;
+        
         try {
             DB::beginTransaction();
             
-            $file = $request->file('file');
-            
-            if (!$file || !$file->isValid()) {
-                return back()->with('error', 'File tidak valid atau corrupt!');
-            }
-            
             AuditBatchService::start("Import data Penghuni dari Excel: {$file->getClientOriginalName()}");
             
-            Excel::import(new PenghuniImport, $file);
+            Excel::import(new PenghuniImport, $path);
             
             AuditBatchService::end();
             
             DB::commit();
+
+            if (file_exists($path)) {
+                unlink($path);
+            }
             
             return redirect()->route('penghuni.index')
                 ->with('success', 'Data berhasil diimport dari Excel!');
@@ -1140,6 +1149,10 @@ class PenghuniController extends Controller
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             AuditBatchService::end();
             DB::rollBack();
+            
+            if (file_exists($path)) {
+                unlink($path);
+            }
             
             $failures = $e->failures();
             $errorMessages = [];
@@ -1154,11 +1167,19 @@ class PenghuniController extends Controller
             AuditBatchService::end();
             DB::rollBack();
             
+            if (file_exists($path)) {
+                unlink($path);
+            }
+            
             return back()->with('error', 'Error membaca file Excel: ' . $e->getMessage());
             
         } catch (\Exception $e) {
             AuditBatchService::end();
             DB::rollBack();
+            
+            if (file_exists($path)) {
+                unlink($path);
+            }
             
             return back()->with('error', 'Gagal import: ' . $e->getMessage());
         }
