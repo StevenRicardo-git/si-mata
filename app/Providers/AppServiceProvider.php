@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 use App\Models\Kontrak;
 use App\Observers\KontrakObserver;
+use Illuminate\Support\Facades\URL;
 use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,5 +32,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Kontrak::observe(KontrakObserver::class);
+
+        if (env('APP_ENV') !== 'local') {
+            URL::forceScheme('https');
+        }
     }
 }
