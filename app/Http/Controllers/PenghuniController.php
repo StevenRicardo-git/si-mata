@@ -1129,6 +1129,9 @@ class PenghuniController extends Controller
         $path = $temp_dir . DIRECTORY_SEPARATOR . $nama_file;
         
         try {
+            config(['excel.temporary_files.local_path' => $temp_dir]);
+            config(['excel.temporary_files.remote_disk' => null]);
+            
             DB::beginTransaction();
             
             AuditBatchService::start("Import data Penghuni dari Excel: {$file->getClientOriginalName()}");
