@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 return new class extends Migration
 {
@@ -26,7 +25,6 @@ return new class extends Migration
             foreach ($kontraks as $kontrak) {
                 if ($keepFirst) {
                     $keepFirst = false;
-                    Log::info("Keeping contract ID {$kontrak->id} for penghuni {$dup->penghuni_id}");
                     continue;
                 }
 
@@ -42,14 +40,12 @@ return new class extends Migration
                 DB::table('units')
                     ->where('id', $kontrak->unit_id)
                     ->update(['status' => 'tersedia', 'updated_at' => now()]);
-
-                Log::info("Deactivated contract ID {$kontrak->id} for penghuni {$dup->penghuni_id}");
             }
         }
     }
 
     public function down(): void
     {
-        Log::warning('Cannot rollback cleanup_duplicate_active_contracts migration');
+        
     }
 };
