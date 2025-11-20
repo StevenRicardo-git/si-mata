@@ -15,33 +15,22 @@ use App\Http\Controllers\DisperkimController;
 use App\Helpers\TerbilangHelper;
 use Illuminate\Support\Facades\Artisan;
 
-Route::get('/fix-db', function () {
-    $output = "<h1>🛠️ Perbaikan Database Vercel</h1>";
+Route::get('/paksa-update', function () {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
 
-    try {
-        Artisan::call('config:clear');
-        Artisan::call('cache:clear');
-        $output .= "<p style='color:green'>✅ Cache Config berhasil dihapus.</p>";
+    $koneksi = env('DB_CONNECTION');
 
-        $conn = env('DB_CONNECTION'); 
-        $host = env('DB_HOST');
-        
-        $output .= "<b>Status Settingan Sekarang:</b><br>";
-        $output .= "Connection: " . $conn . " (Wajib: pgsql)<br>";
-        $output .= "Host: " . $host . "<br><hr>";
-
-        Artisan::call('migrate', ['--force' => true]);
-        
-        $output .= "<h2 style='color:green'>🎉 SUKSES MIGRASI!</h2>";
-        $output .= "<p>Tabel database berhasil dibuat di Supabase.</p>";
-        $output .= "<pre>" . Artisan::output() . "</pre>";
-
-    } catch (\Exception $e) {
-        $output .= "<h2 style='color:red'>❌ MASIH ERROR</h2>";
-        $output .= "<p>Penyebab: " . $e->getMessage() . "</p>";
+    if ($koneksi != 'pgsql') {
+        return "<h1>❌ GAGAL: Masih terbaca sebagai '$koneksi'</h1><p>Coba Redeploy lagi di dashboard Vercel.</p>";
     }
 
-    return $output;
+    try {
+        Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
+        return "<h1>✅ SUKSES!</h1><p>Koneksi: $koneksi</p><p>Database sudah di-reset dan diisi data baru.</p><pre>" . Artisan::output() . "</pre>";
+    } catch (\Exception $e) {
+        return "<h1>⚠️ Error Migrasi</h1><p>" . $e->getMessage() . "</p>";
+    }
 });
 
 Route::redirect('/', '/login');
