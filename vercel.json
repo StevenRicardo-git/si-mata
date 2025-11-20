@@ -19,6 +19,7 @@
         "APP_DEBUG": "true",
         "APP_URL": "https://si-mata.vercel.app",
         "APP_KEY": "base64:hvCXC4fEJObtH+FYn5GOXYsJkFEDt/2Do7zsm35olXI=",
+        
         "DB_CONNECTION": "pgsql",
         "DB_HOST": "aws-0-ap-southeast-1.pooler.supabase.com",
         "DB_PORT": "6543",
