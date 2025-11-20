@@ -12,7 +12,7 @@ return new class extends Migration
             ->select('penghuni_id', DB::raw('COUNT(*) as jumlah'))
             ->where('status', 'aktif')
             ->groupBy('penghuni_id')
-            ->having('jumlah', '>', 1)
+            ->havingRaw('COUNT(*) > 1')
             ->get();
 
         foreach ($duplicates as $dup) {
