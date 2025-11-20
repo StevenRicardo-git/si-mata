@@ -1,26 +1,35 @@
 {
     "version": 2,
-    "framework": "laravel",
+    "framework": null,
     "functions": {
-        "api/index.php": {
-            "runtime": "vercel-php@0.7.2",
-            "memory": 3008,
-            "maxDuration": 30
-        }
+        "api/index.php": { "runtime": "vercel-php@0.7.2" }
     },
-    "buildCommand": "bash build.sh",
     "routes": [
-        {
-            "src": "/storage/(.*)",
-            "dest": "/storage/$1"
-        },
         {
             "src": "/(css|js|images)/(.*)",
             "dest": "/public/$1/$2"
         },
         {
-            "src": "^/(.*)",
+            "src": "/(.*)",
             "dest": "/api/index.php"
         }
-    ]
+    ],
+    "env": {
+        "APP_ENV": "production",
+        "APP_DEBUG": "true",
+        "APP_URL": "https://si-mata.vercel.app",
+        "APP_KEY": "base64:hvCXC4fEJObtH+FYn5GOXYsJkFEDt/2Do7zsm35olXI=",
+        
+        "DB_CONNECTION": "pgsql",
+        "DB_HOST": "aws-1-ap-southeast-1.pooler.supabase.com",
+        "DB_PORT": "6543",
+        "DB_DATABASE": "postgres",
+        "DB_USERNAME": "postgres.niatmzpjpvyspokepzsi",
+        "DB_PASSWORD": "sricardogit150605",
+        
+        "LOG_CHANNEL": "stderr",
+        "SESSION_DRIVER": "cookie",
+        "CACHE_STORE": "array",
+        "VIEW_COMPILED_PATH": "/tmp"
+    }
 }
