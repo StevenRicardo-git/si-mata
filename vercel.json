@@ -2,7 +2,7 @@
     "version": 2,
     "framework": null,
     "functions": {
-        "api/index.php": { "runtime": "vercel-php@0.6.0" }
+        "api/index.php": { "runtime": "vercel-php@0.7.0" }
     },
     "routes": [
         {
@@ -17,7 +17,7 @@
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
-        "APP_URL": "https://nama-projek-kamu.vercel.app",
-        "APP_KEY": "base64:..."
+        "APP_URL": "https://si-mata.vercel.app",
+        "APP_KEY": "base64:hvCXC4fEJObtH+FYn5GOXYsJkFEDt/2Do7zsm35olXI="
     }
 }
