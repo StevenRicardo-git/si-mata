@@ -15,13 +15,33 @@ use App\Http\Controllers\DisperkimController;
 use App\Helpers\TerbilangHelper;
 use Illuminate\Support\Facades\Artisan;
 
-Route::get('/jalankan-migrasi', function () {
+Route::get('/fix-db', function () {
+    $output = "<h1>🛠️ Perbaikan Database Vercel</h1>";
+
     try {
+        Artisan::call('config:clear');
+        Artisan::call('cache:clear');
+        $output .= "<p style='color:green'>✅ Cache Config berhasil dihapus.</p>";
+
+        $conn = env('DB_CONNECTION'); 
+        $host = env('DB_HOST');
+        
+        $output .= "<b>Status Settingan Sekarang:</b><br>";
+        $output .= "Connection: " . $conn . " (Wajib: pgsql)<br>";
+        $output .= "Host: " . $host . "<br><hr>";
+
         Artisan::call('migrate', ['--force' => true]);
-        return '<h1>Sukses! 🎉</h1><p>Database berhasil di-migrate.</p><pre>' . Artisan::output() . '</pre>';
+        
+        $output .= "<h2 style='color:green'>🎉 SUKSES MIGRASI!</h2>";
+        $output .= "<p>Tabel database berhasil dibuat di Supabase.</p>";
+        $output .= "<pre>" . Artisan::output() . "</pre>";
+
     } catch (\Exception $e) {
-        return '<h1>Gagal 😭</h1><p>' . $e->getMessage() . '</p>';
+        $output .= "<h2 style='color:red'>❌ MASIH ERROR</h2>";
+        $output .= "<p>Penyebab: " . $e->getMessage() . "</p>";
     }
+
+    return $output;
 });
 
 Route::redirect('/', '/login');
