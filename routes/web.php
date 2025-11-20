@@ -15,6 +15,33 @@ use App\Http\Controllers\DisperkimController;
 use App\Helpers\TerbilangHelper;
 use Illuminate\Support\Facades\Artisan;
 
+
+Route::get('/reset-db', function () {
+    $output = "<h1>⚠️ DATABASE RESET & SEED</h1>";
+
+    try {
+        Artisan::call('config:clear');
+        Artisan::call('cache:clear');
+        
+        Artisan::call('migrate:fresh', [
+            '--seed' => true,
+            '--force' => true
+        ]);
+        
+        $output .= "<h2 style='color:green'>✅ SUKSES TOTAL!</h2>";
+        $output .= "<p>Tabel Database sudah dibuat ulang.</p>";
+        $output .= "<p>Data Seeder (User Login) sudah dimasukkan.</p>";
+        $output .= "<h3>Log Output:</h3>";
+        $output .= "<pre>" . Artisan::output() . "</pre>";
+
+    } catch (\Exception $e) {
+        $output .= "<h2 style='color:red'>❌ GAGAL</h2>";
+        $output .= "<p>Error: " . $e->getMessage() . "</p>";
+    }
+
+    return $output;
+});
+
 Route::get('/cek-env', function () {
     header('Content-Type: text/plain');
     
