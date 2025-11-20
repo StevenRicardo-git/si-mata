@@ -15,21 +15,31 @@ use App\Http\Controllers\DisperkimController;
 use App\Helpers\TerbilangHelper;
 use Illuminate\Support\Facades\Artisan;
 
-Route::get('/paksa-update', function () {
-    Artisan::call('config:clear');
-    Artisan::call('cache:clear');
+Route::get('/cek-env', function () {
+    header('Content-Type: text/plain');
+    
+    echo "--- DIAGNOSA MENTAH ---\n";
 
-    $koneksi = env('DB_CONNECTION');
-
-    if ($koneksi != 'pgsql') {
-        return "<h1>❌ GAGAL: Masih terbaca sebagai '$koneksi'</h1><p>Coba Redeploy lagi di dashboard Vercel.</p>";
+    $db_conn = getenv('DB_CONNECTION');
+    $db_host = getenv('DB_HOST');
+    
+    if (!$db_conn) {
+        echo "STATUS: ❌ BAHAYA! Variable Kosong.\n";
+        echo "Vercel tidak mengirim data apapun.\n";
+    } else {
+        echo "STATUS: ✅ AMAN! Data terbaca.\n";
+        echo "DB_CONNECTION: " . $db_conn . "\n";
+        echo "DB_HOST: " . $db_host . "\n";
     }
 
-    try {
-        Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
-        return "<h1>✅ SUKSES!</h1><p>Koneksi: $koneksi</p><p>Database sudah di-reset dan diisi data baru.</p><pre>" . Artisan::output() . "</pre>";
-    } catch (\Exception $e) {
-        return "<h1>⚠️ Error Migrasi</h1><p>" . $e->getMessage() . "</p>";
+    echo "\n--- ISI CONFIG LARAVEL ---\n";
+    echo "Default Database: " . config('database.default') . "\n";
+    
+    echo "\n--- NEXT STEP ---\n";
+    if ($db_conn == 'pgsql') {
+         echo "Silakan jalankan route '/reset-db' (buat route baru lagi nanti) untuk migrasi.";
+    } else {
+         echo "Cek file vercel.json kamu lagi!";
     }
 });
 
