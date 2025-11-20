@@ -755,29 +755,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const form = document.getElementById('createPenghuniForm');
+
     if (form) {
         form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
             const nikVal = document.getElementById('nik').value;
             if (nikVal.length !== 16) {
-                e.preventDefault();
                 alert('NIK harus 16 digit!');
+                if (typeof hideLoading === 'function') hideLoading(); 
                 return false;
             }
             
             if(!PenghuniCreate.selectedRusun || !PenghuniCreate.selectedBlok) {
-                e.preventDefault();
                 alert('Pilih Rusun dan Blok dulu!');
                 return false;
             }
             
             const unit = document.getElementById('lantaiUnitSelect').value;
             if(!unit) {
-                e.preventDefault();
                 alert('Pilih Unit!');
                 return false;
             }
 
-            if (typeof showLoading === 'function') showLoading('Menyimpan data...');
+            if (typeof showLoading === 'function') {
+                showLoading('Menyimpan data...');
+            }
+
+            setTimeout(function() {
+                form.submit();
+            }, 2000);
         });
     }
 });
