@@ -139,10 +139,9 @@ class BlacklistController extends Controller
     {
         try {
             $request->validate([
-                'alasan_aktivasi' => 'required|string|min:10',
+                'alasan_aktivasi' => 'required|string',
             ], [
                 'alasan_aktivasi.required' => 'Alasan aktivasi wajib diisi',
-                'alasan_aktivasi.min' => 'Alasan aktivasi minimal 10 karakter'
             ]);
             
             $blacklist = Blacklist::findOrFail($id);

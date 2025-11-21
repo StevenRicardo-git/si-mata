@@ -180,15 +180,46 @@ class AuditDisplayHelper
     {
         switch($modelName) {
             case 'Penghuni':
-                $nama = $data['nama'] ?? 'N/A';
+                $nama = $data['nama'] ?? null;
+                
+                if (!$nama) {
+                    try {
+                        $penghuni = \App\Models\Penghuni::find($audit->auditable_id);
+                        if ($penghuni) {
+                            $nama = $penghuni->nama;
+                        }
+                    } catch (\Exception $e) {
+                    }
+                }
+                
+                if (!$nama && isset($audit->old_values['nama'])) {
+                    $nama = $audit->old_values['nama'];
+                }
+                
+                $nama = $nama ?? 'Penghuni tidak diketahui';
+                
                 if ($event === 'created') return "Menambahkan penghuni baru: {$nama}";
                 if ($event === 'updated') return "Memperbarui data penghuni: {$nama}";
                 if ($event === 'deleted') return "Menghapus penghuni: {$nama}";
                 break;
                 
             case 'Kontrak':
-                $penghuniName = $audit->penghuni_name ?? 'N/A';
-                $unitCode = $audit->unit_code ?? 'N/A';
+                $penghuniName = $audit->penghuni_name ?? null;
+                $unitCode = $audit->unit_code ?? null;
+                
+                if (!$penghuniName || !$unitCode) {
+                    try {
+                        $kontrak = \App\Models\Kontrak::with(['penghuni', 'unit'])->find($audit->auditable_id);
+                        if ($kontrak) {
+                            $penghuniName = $penghuniName ?? ($kontrak->penghuni->nama ?? null);
+                            $unitCode = $unitCode ?? ($kontrak->unit->kode_unit ?? null);
+                        }
+                    } catch (\Exception $e) {
+                    }
+                }
+                
+                $penghuniName = $penghuniName ?? 'Penghuni tidak diketahui';
+                $unitCode = $unitCode ?? 'Unit tidak diketahui';
                 
                 if ($event === 'created') {
                     return "Membuat kontrak baru: {$penghuniName} di unit {$unitCode}";
@@ -202,8 +233,24 @@ class AuditDisplayHelper
                 break;
                 
             case 'Keluarga':
-                $penghuniName = $audit->penghuni_name ?? 'N/A';
-                $namaKeluarga = $data['nama'] ?? 'N/A';
+                $penghuniName = $audit->penghuni_name ?? null;
+                $namaKeluarga = $data['nama'] ?? null;
+                
+                if (!$penghuniName || !$namaKeluarga) {
+                    try {
+                        $keluarga = \App\Models\Keluarga::with('penghuni')->find($audit->auditable_id);
+                        if ($keluarga) {
+                            $namaKeluarga = $namaKeluarga ?? $keluarga->nama;
+                            if ($keluarga->penghuni) {
+                                $penghuniName = $penghuniName ?? $keluarga->penghuni->nama;
+                            }
+                        }
+                    } catch (\Exception $e) {
+                    }
+                }
+                
+                $penghuniName = $penghuniName ?? 'Penghuni tidak diketahui';
+                $namaKeluarga = $namaKeluarga ?? 'Anggota keluarga';
                 
                 if ($event === 'created') return "Menambah keluarga {$namaKeluarga} untuk {$penghuniName}";
                 if ($event === 'updated') return "Memperbarui data keluarga: {$namaKeluarga}";
@@ -211,13 +258,30 @@ class AuditDisplayHelper
                 break;
                 
             case 'Unit':
-                $kodeUnit = $data['kode_unit'] ?? 'N/A';
+                $kodeUnit = $data['kode_unit'] ?? 'Unit tidak diketahui';
                 if ($event === 'created') return "Menambah unit baru: {$kodeUnit}";
                 if ($event === 'updated') return "Memperbarui unit: {$kodeUnit}";
                 break;
                 
             case 'Blacklist':
-                $nama = $data['nama'] ?? 'N/A';
+                $nama = $data['nama'] ?? null;
+                
+                if (!$nama && isset($audit->old_values['nama'])) {
+                    $nama = $audit->old_values['nama'];
+                }
+                
+                if (!$nama) {
+                    try {
+                        $blacklist = \App\Models\Blacklist::find($audit->auditable_id);
+                        if ($blacklist) {
+                            $nama = $blacklist->nama;
+                        }
+                    } catch (\Exception $e) {
+                    }
+                }
+                
+                $nama = $nama ?? 'Nama tidak diketahui';
+                
                 if ($event === 'created') return "Memasukkan {$nama} ke daftar hitam";
                 if ($event === 'updated') {
                     if (isset($data['status']) && $data['status'] === 'aktif') {
@@ -245,6 +309,7 @@ class AuditDisplayHelper
         $penghuni = null;
         $kontrak = null;
         $unit = null;
+        $blacklist = null;
         $keluargaList = [];
         
         $createdCount = 0;
@@ -276,6 +341,7 @@ class AuditDisplayHelper
             }
             if ($modelName === 'Blacklist') {
                 $blacklistCount++;
+                if (!$blacklist) $blacklist = $audit;
             }
         }
         
@@ -284,7 +350,47 @@ class AuditDisplayHelper
                    ($keluargaCount > 0 ? ", {$keluargaCount} keluarga" : "");
         }
         
-        if ($createdCount >= 1 && $updatedCount >= 1 && $kontrakCount === 1 && $penghuniCount >= 1 && $unitCount >= 1) {
+        if ($blacklistCount > 0 && $penghuniCount >= 1) {
+            $nama = null;
+            
+            if ($blacklist) {
+                $nama = $blacklist->new_values['nama'] ?? $blacklist->old_values['nama'] ?? null;
+            }
+            
+            if (!$nama && $penghuni) {
+                $nama = $penghuni->new_values['nama'] ?? $penghuni->old_values['nama'] ?? null;
+            }
+            
+            if (!$nama) {
+                try {
+                    if ($blacklist) {
+                        $blacklistModel = \App\Models\Blacklist::find($blacklist->auditable_id);
+                        if ($blacklistModel) {
+                            $nama = $blacklistModel->nama;
+                        }
+                    }
+                    
+                    if (!$nama && $penghuni) {
+                        $penghuniModel = \App\Models\Penghuni::find($penghuni->auditable_id);
+                        if ($penghuniModel) {
+                            $nama = $penghuniModel->nama;
+                        }
+                    }
+                } catch (\Exception $e) {
+                }
+            }
+            
+            $nama = $nama ?? 'Penghuni tidak diketahui';
+            
+            if ($blacklist && $blacklist->event === 'updated' && 
+                isset($blacklist->new_values['status']) && $blacklist->new_values['status'] === 'aktif') {
+                return "Mengaktifkan kembali {$nama}";
+            }
+            
+            return "Memasukkan {$nama} ke daftar hitam";
+        }
+        
+        if ($createdCount > 0 && $updatedCount >= 1 && $kontrakCount === 1 && $penghuniCount >= 1 && $unitCount >= 1) {
             if ($kontrak && $kontrak->event === 'created') {
                 $namaPenghuni = self::extractPenghuniName($kontrak, $penghuni);
                 $unitCode = self::extractUnitCode($kontrak, $unit);
@@ -364,15 +470,6 @@ class AuditDisplayHelper
             }
             
             return $keluargaCount === 1 ? "Menambah 1 anggota keluarga" : "Menambah {$keluargaCount} anggota keluarga";
-        }
-        
-        if ($blacklistCount > 0 && $penghuniCount === 1 && $kontrakCount >= 1) {
-            if ($penghuni) {
-                $namaPenghuni = $penghuni->old_values['nama'] ?? $penghuni->new_values['nama'] ?? null;
-                if ($namaPenghuni) {
-                    return "Memasukkan {$namaPenghuni} ke daftar hitam";
-                }
-            }
         }
         
         if ($createdCount > 0) {
