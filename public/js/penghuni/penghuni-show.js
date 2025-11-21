@@ -238,19 +238,63 @@ const PenghuniDetail = {
     setupTanggalValidation() {
         const tanggalMasuk = document.getElementById('tanggalMasuk');
         const tanggalKeluar = document.getElementById('tanggalKeluar');
+        const tanggalSip = document.getElementById('tanggal_sip');
+        const tanggalSps = document.getElementById('tanggal_sps');
         
         if (!tanggalMasuk || !tanggalKeluar) return;
-        
         tanggalMasuk.addEventListener('change', function() {
             if (this.value) {
                 tanggalKeluar.min = this.value;
+                
+                if (tanggalSip) {
+                    tanggalSip.value = this.value;
+                    tanggalSip.readOnly = true;
+                    tanggalSip.classList.add('bg-gray-100');
+                    tanggalSip.style.cursor = 'not-allowed';
+                    tanggalSip.setAttribute('title', 'Tanggal SIP otomatis mengikuti tanggal masuk');
+                }
+                
+                if (tanggalSps) {
+                    tanggalSps.value = this.value;
+                    tanggalSps.readOnly = true;
+                    tanggalSps.classList.add('bg-gray-100');
+                    tanggalSps.style.cursor = 'not-allowed';
+                    tanggalSps.setAttribute('title', 'Tanggal SPS otomatis mengikuti tanggal masuk');
+                }
+                
                 if (tanggalKeluar.value && tanggalKeluar.value < this.value) {
                     tanggalKeluar.value = this.value;
                 }
             }
         });
+        
+        if (tanggalSip) {
+            tanggalSip.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                if (typeof showToast === 'function') {
+                    showToast('Tanggal SIP otomatis mengikuti tanggal masuk sewa', 'info');
+                }
+            });
+            
+            tanggalSip.addEventListener('keydown', (e) => {
+                e.preventDefault();
+            });
+        }
+        
+        if (tanggalSps) {
+            tanggalSps.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                if (typeof showToast === 'function') {
+                    showToast('Tanggal SPS otomatis mengikuti tanggal masuk sewa', 'info');
+                }
+            });
+            
+            tanggalSps.addEventListener('keydown', (e) => {
+                e.preventDefault();
+            });
+        }
     },
- 
+    
     selectRusun(rusun) {
         this.selectedRusun = rusun;
 
@@ -593,8 +637,61 @@ const PenghuniDetail = {
 window.PenghuniDetail = PenghuniDetail;
 
 document.addEventListener('DOMContentLoaded', function() {
-    PenghuniDetail.setupTanggalValidation();
+    const setupAutoSyncTanggal = () => {
+        const tanggalMasukModal = document.getElementById('tanggalMasuk');
+        const tanggalSipModal = document.getElementById('tanggal_sip');
+        const tanggalSpsModal = document.getElementById('tanggal_sps');
+        
+        if (tanggalMasukModal && tanggalSipModal && tanggalSpsModal) {
+            const resetTanggalFields = () => {
+                tanggalSipModal.value = '';
+                tanggalSpsModal.value = '';
+                tanggalSipModal.readOnly = true;
+                tanggalSpsModal.readOnly = true;
+                tanggalSipModal.classList.add('bg-gray-100');
+                tanggalSpsModal.classList.add('bg-gray-100');
+            };
+            
+            tanggalMasukModal.addEventListener('change', function() {
+                if (this.value) {
+                    tanggalSipModal.value = this.value;
+                    tanggalSpsModal.value = this.value;
+                    tanggalSipModal.readOnly = true;
+                    tanggalSpsModal.readOnly = true;
+                    tanggalSipModal.classList.add('bg-gray-100', 'cursor-not-allowed');
+                    tanggalSpsModal.classList.add('bg-gray-100', 'cursor-not-allowed');
+                }
+            });
+            
+            tanggalSipModal.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                showToast('Tanggal SIP otomatis mengikuti tanggal masuk sewa', 'info');
+            });
+            
+            tanggalSipModal.addEventListener('keydown', (e) => {
+                e.preventDefault();
+            });
+            
+            tanggalSpsModal.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                showToast('Tanggal SPS otomatis mengikuti tanggal masuk sewa', 'info');
+            });
+            
+            tanggalSpsModal.addEventListener('keydown', (e) => {
+                e.preventDefault();
+            });
+            
+            const originalOpenAddKontrakModal = PenghuniDetail.openAddKontrakModal;
+            PenghuniDetail.openAddKontrakModal = function() {
+                resetTanggalFields();
+                originalOpenAddKontrakModal.call(this);
+            };
+        }
+    };
 
+    setupAutoSyncTanggal();
+    PenghuniDetail.setupTanggalValidation();
+        
     const keringananSelect = document.getElementById('keringananSelect');
     if (keringananSelect) {
         keringananSelect.addEventListener('change', () => PenghuniDetail.handleKeringananChange());

@@ -33,11 +33,11 @@ class KontrakController extends Controller
                 'keringanan' => 'required|in:dapat,tidak,normal',
                 'nominal_keringanan' => 'required|numeric|min:0',
                 'tarif_air' => 'required|numeric|min:0',
-                'tanggal_sps' => 'nullable|date',
-                'no_sps' => 'nullable|string|max:255',
+                'tanggal_sps' => 'required|date|date_format:Y-m-d',
+                'no_sps' => 'required|string|max:255',
                 'nilai_jaminan' => 'nullable|numeric|min:0',
-                'no_sip' => 'nullable|string|max:255',
-                'tanggal_sip' => 'nullable|date',
+                'no_sip' => 'required|string|max:255',
+                'tanggal_sip' => 'required|date|date_format:Y-m-d',
                 'alasan_keluar' => 'nullable|string',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -45,6 +45,24 @@ class KontrakController extends Controller
                 ->withErrors($e->errors())
                 ->withInput()
                 ->with('error', 'Validasi gagal: ' . collect($e->errors())->flatten()->first());
+        }
+
+        $tanggalMasuk = date('Y-m-d', strtotime($validatedData['tanggal_masuk']));
+        $tanggalSip = date('Y-m-d', strtotime($validatedData['tanggal_sip']));
+        $tanggalSps = date('Y-m-d', strtotime($validatedData['tanggal_sps']));
+
+        if ($tanggalSip !== $tanggalMasuk) {
+            return back()
+                ->withErrors(['tanggal_sip' => 'Tanggal SIP harus sama dengan tanggal masuk sewa.'])
+                ->withInput()
+                ->with('error', 'Tanggal SIP harus sama dengan tanggal masuk sewa.');
+        }
+
+        if ($tanggalSps !== $tanggalMasuk) {
+            return back()
+                ->withErrors(['tanggal_sps' => 'Tanggal SPS harus sama dengan tanggal masuk sewa.'])
+                ->withInput()
+                ->with('error', 'Tanggal SPS harus sama dengan tanggal masuk sewa.');
         }
         
         $existingActiveContract = Kontrak::where('penghuni_id', $validatedData['penghuni_id'])

@@ -224,8 +224,30 @@
                     <input type="text" id="no_sip" name="no_sip" value="{{ old('no_sip') }}" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" placeholder="Masukkan No. SIP">
                 </div>
                 <div>
-                    <label for="tanggal_sip" class="block text-sm font-medium text-gray-700 mb-2">Tanggal SIP</label>
-                    <input type="date" id="tanggal_sip" name="tanggal_sip" value="{{ old('tanggal_sip') }}" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                    <label for="tanggal_sip" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tanggal SIP 
+                        <span class="text-xs text-gray-500 font-normal">(Otomatis)</span>
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="date" 
+                            id="tanggal_sip" 
+                            name="tanggal_sip" 
+                            required 
+                            readonly
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed focus:ring-0 focus:border-gray-300"
+                            title="Tanggal SIP otomatis mengikuti tanggal masuk sewa">
+                        <svg class="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">
+                        <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        Isi tanggal masuk sewa terlebih dahulu
+                    </p>
                 </div>
 
                 <div>
@@ -233,10 +255,32 @@
                     <input type="text" id="no_sps" name="no_sps" value="{{ old('no_sps') }}" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" placeholder="Masukkan No. SPS">
                 </div>
                 <div>
-                    <label for="tanggal_sps" class="block text-sm font-medium text-gray-700 mb-2">Tanggal SPS</label>
-                    <input type="date" id="tanggal_sps" name="tanggal_sps" value="{{ old('tanggal_sps') }}" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                    <label for="tanggal_sps" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tanggal SPS 
+                        <span class="text-xs text-gray-500 font-normal">(Otomatis)</span>
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="date" 
+                            id="tanggal_sps" 
+                            name="tanggal_sps" 
+                            required 
+                            readonly
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed focus:ring-0 focus:border-gray-300"
+                            title="Tanggal SPS otomatis mengikuti tanggal masuk sewa">
+                        <svg class="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">
+                        <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        Isi tanggal masuk sewa terlebih dahulu
+                    </p>
                 </div>
-
+                
                 <div>
                     <label for="keringananSelect" class="block text-sm font-medium text-gray-700 mb-2">Keringanan <span class="text-red-500">*</span></label>
                     <select name="keringanan" id="keringananSelect" required disabled class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100">

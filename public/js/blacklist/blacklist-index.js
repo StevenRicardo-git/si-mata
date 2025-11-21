@@ -13,6 +13,7 @@
 
         setupEventListeners() {
             const searchInput = document.getElementById('searchInput');
+            const typingIndicator = document.getElementById('searchTypingIndicator');
             
             if (searchInput) {
                 searchInput.addEventListener('keypress', (e) => {
@@ -21,6 +22,10 @@
                         
                         if (this.searchTimeout) {
                             clearTimeout(this.searchTimeout);
+                        }
+                        
+                        if (typingIndicator) {
+                            typingIndicator.classList.add('hidden');
                         }
                         
                         searchInput.style.borderColor = '';
@@ -97,13 +102,7 @@
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    if (typeof showLoading === 'function') {
-                        showLoading('Memuat halaman...');
-                    }
-                    
-                    setTimeout(() => {
-                        window.location.href = href;
-                    }, 1000);
+                    navigateWithFullPageLoading(href);
                 });
                 
                 link.dataset.paginationListener = 'true';
@@ -123,17 +122,7 @@
                 
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    
-                    if (typeof navigateWithFullPageLoading === 'function') {
-                        navigateWithFullPageLoading(href, 'Membuka detail penghuni...');
-                    } else {
-                        if (typeof showLoading === 'function') {
-                            showLoading('Membuka detail penghuni...');
-                        }
-                        setTimeout(() => {
-                            window.location.href = href;
-                        }, 1000);
-                    }
+                    navigateWithFullPageLoading(href, 'Membuka detail penghuni...');
                 });
                 
                 link.dataset.hasListener = 'true';
@@ -143,25 +132,15 @@
         changePerPage() {
             const perPage = document.getElementById('perPageSelect').value;
             
-            if (typeof showLoading === 'function') {
-                showLoading('Memuat data...');
-            }
-            
             const url = new URL(window.location.href);
             url.searchParams.set('per_page', perPage);
             url.searchParams.delete('page');
             
-            setTimeout(() => {
-                window.location.href = url.toString();
-            }, 1000);
+            navigateWithFullPageLoading(url.toString(), 'Memuat data...');
         },
 
         globalSearch() {
             const searchValue = document.getElementById('searchInput').value.trim();
-            
-            if (typeof showLoading === 'function') {
-                showLoading(searchValue ? 'Mencari data...' : 'Menampilkan semua data...');
-            }
             
             const url = new URL(window.location.href);
             
@@ -173,17 +152,12 @@
             
             url.searchParams.delete('page');
             
-            setTimeout(() => {
-                window.location.href = url.toString();
-            }, 500);
+            navigateWithFullPageLoading(url.toString(), searchValue ? 'Mencari data...' : 'Menampilkan semua data...');
         },
 
         openReactivateModal(id, nama, nik) {
             const form = document.getElementById('reactivateForm');
-            if (!form) {
-                alert('Error: Form tidak ditemukan');
-                return;
-            }
+            if (!form) return;
             
             form.action = `/blacklist/${id}`;
             
@@ -196,17 +170,11 @@
             const alasanEl = document.getElementById('alasan_aktivasi');
             if (alasanEl) alasanEl.value = '';
             
-            if (window.openModal && typeof window.openModal === 'function') {
-                window.openModal('reactivateModal');
-            } else {
-                const modal = document.getElementById('reactivateModal');
-                if (modal) {
-                    modal.classList.remove('hidden');
-                    setTimeout(() => {
-                        if (alasanEl) alasanEl.focus();
-                    }, 100);
-                }
-            }
+            openModal('reactivateModal');
+            
+            setTimeout(() => {
+                if (alasanEl) alasanEl.focus();
+            }, 100);
         },
 
         showDetailAlasan(nama, alasan, title = 'Alasan Blacklist') {
@@ -218,19 +186,15 @@
             if (modalNama) modalNama.textContent = nama;
             if (modalContent) modalContent.textContent = alasan;
             
-            if (window.openModal && typeof window.openModal === 'function') {
-                window.openModal('detailAlasanModal');
-            }
+            openModal('detailAlasanModal');
         }
     };
 
     document.addEventListener('DOMContentLoaded', () => {
         BlacklistIndex.init();
         
-        if (typeof setupModalBackdropClose === 'function') {
-            setupModalBackdropClose('reactivateModal');
-            setupModalBackdropClose('detailAlasanModal');
-        }
+        setupModalBackdropClose('reactivateModal');
+        setupModalBackdropClose('detailAlasanModal');
 
         const reactivateForm = document.getElementById('reactivateForm');
         if (reactivateForm) {
@@ -241,29 +205,27 @@
                 const alasan = alasanInput ? alasanInput.value.trim() : '';
                 
                 if (!alasan) {
-                    alert('Alasan aktivasi wajib diisi!');
+                    showToast('Alasan aktivasi wajib diisi!', 'error');
                     if (alasanInput) alasanInput.focus();
                     return false;
                 }
                 
                 if (alasan.length < 10) {
-                    alert('Alasan aktivasi minimal 10 karakter!');
+                    showToast('Alasan aktivasi minimal 10 karakter!', 'error');
                     if (alasanInput) alasanInput.focus();
                     return false;
                 }
                 
                 if (!this.action || this.action.includes('undefined') || this.action.includes('null')) {
-                    alert('Error: URL tidak valid. Silakan refresh halaman.');
+                    showToast('Error: URL tidak valid. Silakan refresh halaman.', 'error');
                     return false;
                 }
                 
-                if (window.showLoading && typeof window.showLoading === 'function') {
-                    window.showLoading('Mengaktifkan penghuni kembali...');
-                }
+                showLoading('Mengaktifkan penghuni kembali...');
 
                 setTimeout(() => {
                     this.submit();
-                }, 1000);
+                }, 2000);
             });
         }
     });

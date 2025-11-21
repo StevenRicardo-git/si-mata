@@ -856,9 +856,9 @@ class PenghuniController extends Controller
             'nominal_keringanan' => 'required|numeric|min:0',
             'tarif_air' => 'required|numeric|min:0',
             'no_sps' => 'required|string|max:255',
-            'tanggal_sps' => 'required|date',
+            'tanggal_sps' => 'required|date|date_format:Y-m-d',
             'no_sip' => 'required|string|max:255',
-            'tanggal_sip' => 'required|date',
+            'tanggal_sip' => 'required|date|date_format:Y-m-d',
             'nilai_jaminan' => 'nullable|numeric|min:0',
             
             'ada_pasangan' => 'nullable|boolean',
@@ -897,6 +897,26 @@ class PenghuniController extends Controller
                 ->withErrors($validator)
                 ->withInput()
                 ->with('error', collect($validator->errors())->flatten()->first());
+        }
+
+        $validated = $validator->validated();
+        $validated['nama'] = strtoupper($validated['nama']);
+
+        if (isset($validated['tempat_lahir']) && $validated['tempat_lahir']) {
+            $validated['tempat_lahir'] = strtoupper($validated['tempat_lahir']);
+        }
+
+        if (isset($validated['pasangan_nama']) && $validated['pasangan_nama']) {
+            $validated['pasangan_nama'] = strtoupper($validated['pasangan_nama']);
+        }
+        $tanggalMasuk = date('Y-m-d', strtotime($validated['tanggal_masuk']));
+        $tanggalSip = date('Y-m-d', strtotime($validated['tanggal_sip']));
+        $tanggalSps = date('Y-m-d', strtotime($validated['tanggal_sps']));
+
+        if ($tanggalSip !== $tanggalMasuk || $tanggalSps !== $tanggalMasuk) {
+            return back()
+                ->withInput()
+                ->with('error', 'Tanggal SIP dan SPS harus sama dengan tanggal masuk sewa. Silakan isi ulang form.');
         }
 
         $validated = $validator->validated();
