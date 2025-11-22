@@ -668,6 +668,64 @@
     }
 }
 
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+#umurAwal,
+#umurAkhir {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+#umurAwal::-webkit-inner-spin-button,
+#umurAwal::-webkit-outer-spin-button,
+#umurAkhir::-webkit-inner-spin-button,
+#umurAkhir::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    display: none;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
 .stat-card,
 .blok-card-enhanced {
     animation: fadeInUp 0.5s ease-out;

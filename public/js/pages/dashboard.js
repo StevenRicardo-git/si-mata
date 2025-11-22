@@ -9,6 +9,7 @@ const Dashboard = {
         this.setupDashboardLinks();
         this.setupFilters();
         this.initCharts();
+        KelompokUmurFilter.init();
     },
     
     initCharts() {
@@ -608,8 +609,298 @@ const Dashboard = {
     }
 };
 
+    const KelompokUmurFilter = {
+    originalKelompokUmurData: null,
+    debounceTimer: null,
+    countdownInterval: null,
+    remainingSeconds: 0,
+    
+    init() {
+        this.setupEventListeners();
+        this.storeOriginalData();
+    },
+    
+    setupEventListeners() {
+        const umurAwal = document.getElementById('umurAwal');
+        const umurAkhir = document.getElementById('umurAkhir');
+        
+        if (umurAwal) {
+            umurAwal.addEventListener('input', () => this.debouncedAutoUpdate());
+        }
+        if (umurAkhir) {
+            umurAkhir.addEventListener('input', () => this.debouncedAutoUpdate());
+        }
+    },
+    
+    debouncedAutoUpdate() {
+        if (this.debounceTimer) {
+            clearTimeout(this.debounceTimer);
+        }
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+        }
+        
+        this.remainingSeconds = 5;
+        this.showCountdown();
+        
+        this.countdownInterval = setInterval(() => {
+            this.remainingSeconds--;
+            this.showCountdown();
+            
+            if (this.remainingSeconds <= 0) {
+                clearInterval(this.countdownInterval);
+                this.hideCountdown();
+            }
+        }, 1000);
+        
+        this.debounceTimer = setTimeout(() => {
+            this.autoUpdatePreview();
+            this.hideCountdown();
+        }, 5000);
+    },
+    
+    showCountdown() {
+        const previewContent = document.getElementById('previewContent');
+        
+        if (this.remainingSeconds > 0) {
+            previewContent.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 font-bold text-2xl mb-3">
+                        ${this.remainingSeconds}
+                    </div>
+                    <p class="text-gray-600 text-sm">Filter akan dijalankan dalam <strong>${this.remainingSeconds}</strong> detik...</p>
+                    <div class="w-64 mx-auto mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-blue-600 transition-all duration-1000" style="width: ${(this.remainingSeconds / 5) * 100}%"></div>
+                    </div>
+                </div>
+            `;
+        }
+    },
+    
+    hideCountdown() {
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
+    },
+    
+    storeOriginalData() {
+        this.originalKelompokUmurData = window.kelompokUmurData ? { ...window.kelompokUmurData } : null;
+    },
+    
+    openModal() {
+        const modal = document.getElementById('kelompokUmurFilterModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            
+            document.getElementById('umurAwal').value = '';
+            document.getElementById('umurAkhir').value = '';
+            document.getElementById('previewContent').innerHTML = '<p class="text-gray-500 text-sm text-center py-8">Masukkan usia untuk melihat preview (otomatis setelah 5 detik)</p>';
+        }
+    },
+    
+    closeModal() {
+        const modal = document.getElementById('kelompokUmurFilterModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            
+            if (this.debounceTimer) {
+                clearTimeout(this.debounceTimer);
+                this.debounceTimer = null;
+            }
+            this.hideCountdown();
+            
+            if (Dashboard.charts.kelompokUmur && this.originalKelompokUmurData) {
+                Dashboard.charts.kelompokUmur.data.datasets[0].data = Object.values(this.originalKelompokUmurData);
+                Dashboard.charts.kelompokUmur.update('none');
+            }
+        }
+    },
+    
+    async autoUpdatePreview() {
+        const umurAwal = parseInt(document.getElementById('umurAwal').value);
+        let umurAkhir = parseInt(document.getElementById('umurAkhir').value);
+        const previewContent = document.getElementById('previewContent');
+        
+        if ((umurAwal || umurAwal === 0) && (!umurAkhir && umurAkhir !== 0)) {
+            umurAkhir = umurAwal;
+        }
+        
+        if (!umurAwal && umurAwal !== 0) {
+            previewContent.innerHTML = '<p class="text-gray-500 text-sm text-center py-8">Masukkan usia untuk melihat preview (otomatis setelah 5 detik)</p>';
+            return;
+        }
+        
+        if (umurAkhir && umurAwal > umurAkhir) {
+            previewContent.innerHTML = '<p class="text-red-500 text-sm font-semibold text-center py-8">⚠️ Usia awal harus lebih kecil atau sama dengan usia akhir</p>';
+            return;
+        }
+
+        previewContent.innerHTML = `
+            <div class="text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p class="text-gray-600 text-sm mt-2">Memuat data...</p>
+            </div>
+        `;
+        
+        try {
+            const requestBody = {
+                umur_awal: umurAwal
+            };
+            
+            const umurAkhirInput = document.getElementById('umurAkhir').value;
+            if (umurAkhirInput && umurAkhirInput.trim() !== '') {
+                requestBody.umur_akhir = umurAkhir;
+            }
+            
+            const response = await fetch('/api/dashboard/filter-kelompok-umur', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            const result = await response.json();
+            
+            if (!result.success) {
+                previewContent.innerHTML = `
+                    <div class="text-center py-8">
+                        <p class="text-red-500 font-semibold">❌ ${result.message || 'Terjadi kesalahan'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const { kelompok_umur, total_orang, breakdown, rentang } = result.data;
+            
+            if (total_orang === 0) {
+                previewContent.innerHTML = `
+                    <div class="text-center py-8">
+                        <p class="text-yellow-600 font-semibold mb-2">⚠️ Tidak ada data dalam rentang ini</p>
+                        <p class="text-gray-600 text-sm">Rentang: <strong>${rentang.text}</strong></p>
+                    </div>
+                `;
+                
+                if (Dashboard.charts.kelompokUmur && this.originalKelompokUmurData) {
+                    Dashboard.charts.kelompokUmur.data.datasets[0].data = Object.values(this.originalKelompokUmurData);
+                    Dashboard.charts.kelompokUmur.update('none');
+                }
+                return;
+            }
+            
+            let html = `
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border-2 border-blue-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-bold text-gray-900">📊 Preview Data Real</h4>
+                        <span class="px-3 py-1 bg-blue-600 text-white text-sm font-bold rounded-full">${total_orang} orang</span>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 mb-3">
+                        <p class="text-sm text-gray-600">Rentang usia yang dipilih:</p>
+                        <p class="text-2xl font-bold text-blue-600">${rentang.text}</p>
+                    </div>
+                    <div class="space-y-2">
+            `;
+            
+            const colorMap = {
+                '0-5': 'purple',
+                '5-12': 'blue',
+                '12-18': 'green',
+                '18-60': 'yellow',
+                '60+': 'red'
+            };
+            
+            breakdown.forEach(item => {
+                const color = colorMap[item.kategori] || 'gray';
+                html += `
+                    <div class="flex items-center justify-between bg-white rounded-lg p-3 border border-gray-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded-full bg-${color}-500"></div>
+                            <span class="text-sm font-medium text-gray-700">${item.label}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm text-gray-500">${item.persentase}%</span>
+                            <span class="font-bold text-gray-900">${item.jumlah} orang</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            previewContent.innerHTML = html;
+            
+            this.currentFilteredData = kelompok_umur;
+            
+            if (Dashboard.charts.kelompokUmur) {
+                Dashboard.charts.kelompokUmur.data.datasets[0].data = Object.values(kelompok_umur);
+                Dashboard.charts.kelompokUmur.update('none');
+            }
+            
+        } catch (error) {
+            console.error('Error fetching filter data:', error);
+            previewContent.innerHTML = `
+                <div class="text-center py-8">
+                    <p class="text-red-500 font-semibold">❌ Gagal memuat data</p>
+                    <p class="text-gray-600 text-sm mt-2">${error.message}</p>
+                </div>
+            `;
+        }
+    },
+    
+    filterKelompokUmurByRange(awal, akhir) {
+        const original = this.originalKelompokUmurData || window.kelompokUmurData;
+        const filtered = { '0-5': 0, '5-12': 0, '12-18': 0, '18-60': 0, '60+': 0 };
+        
+        if (awal <= 5 && akhir >= 0) filtered['0-5'] = original['0-5'];
+        if (awal <= 12 && akhir >= 5) filtered['5-12'] = original['5-12'];
+        if (awal <= 18 && akhir >= 12) filtered['12-18'] = original['12-18'];
+        if (awal <= 60 && akhir >= 18) filtered['18-60'] = original['18-60'];
+        if (awal <= 150 && akhir >= 60) filtered['60+'] = original['60+'];
+        
+        return filtered;
+    },
+    
+    showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#10B981' : '#EF4444'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 9999;
+            animation: slideInRight 0.3s ease-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease-out';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    },
+    
+    setQuickRange(awal, akhir) {
+        document.getElementById('umurAwal').value = awal;
+        document.getElementById('umurAkhir').value = akhir;
+        this.debouncedAutoUpdate();
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+    KelompokUmurFilter.init();
     Dashboard.init();
 });
 
 window.Dashboard = Dashboard;
+window.KelompokUmurFilter = KelompokUmurFilter;

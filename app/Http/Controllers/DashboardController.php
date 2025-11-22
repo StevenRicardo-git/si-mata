@@ -194,6 +194,130 @@ class DashboardController extends Controller
         return $kelompok;
     }
 
+    public function filterKelompokUmur(Request $request)
+    {
+        $request->validate([
+            'umur_awal' => 'required|integer|min:0|max:150',
+            'umur_akhir' => 'nullable|integer|min:0|max:150',
+        ]);
+
+        $umurAwal = (int)$request->umur_awal;
+        
+        $umurAkhir = $request->filled('umur_akhir') ? (int)$request->umur_akhir : $umurAwal;
+
+        if ($request->filled('umur_akhir') && $umurAwal > $umurAkhir) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usia awal harus lebih kecil dari usia akhir'
+            ], 400);
+        }
+
+        $blacklistedNiks = Blacklist::where('status', 'blacklist')->pluck('nik');
+        
+        $penghuniAktif = Penghuni::whereNotIn('nik', $blacklistedNiks)
+            ->whereHas('kontrak', function($q) {
+                $q->where('status', 'aktif');
+            })
+            ->get(['id', 'tanggal_lahir']);
+
+        $penghuniIds = $penghuniAktif->pluck('id');
+        
+        $keluarga = Keluarga::whereIn('penghuni_id', $penghuniIds)
+            ->get(['umur']);
+
+        $dataInRange = [];
+        $totalOrang = 0;
+
+        foreach ($penghuniAktif as $penghuni) {
+            if ($penghuni->tanggal_lahir) {
+                $umur = Carbon::parse($penghuni->tanggal_lahir)->age;
+                if ($umur >= $umurAwal && $umur <= $umurAkhir) {
+                    $kategori = $this->getKategoriUmur($umur);
+                    if (!isset($dataInRange[$kategori])) {
+                        $dataInRange[$kategori] = 0;
+                    }
+                    $dataInRange[$kategori]++;
+                    $totalOrang++;
+                }
+            }
+        }
+
+        foreach ($keluarga as $anggota) {
+            if ($anggota->umur !== null && $anggota->umur >= 0) {
+                if ($anggota->umur >= $umurAwal && $anggota->umur <= $umurAkhir) {
+                    $kategori = $this->getKategoriUmur($anggota->umur);
+                    if (!isset($dataInRange[$kategori])) {
+                        $dataInRange[$kategori] = 0;
+                    }
+                    $dataInRange[$kategori]++;
+                    $totalOrang++;
+                }
+            }
+        }
+
+        $kelompokUmur = [
+            '0-5' => $dataInRange['0-5'] ?? 0,
+            '5-12' => $dataInRange['5-12'] ?? 0,
+            '12-18' => $dataInRange['12-18'] ?? 0,
+            '18-60' => $dataInRange['18-60'] ?? 0,
+            '60+' => $dataInRange['60+'] ?? 0,
+        ];
+
+        $breakdown = [];
+        $labels = [
+            '0-5' => 'Balita (0-5 tahun)',
+            '5-12' => 'Usia Sekolah (5-12 tahun)',
+            '12-18' => 'Remaja (12-18 tahun)',
+            '18-60' => 'Produktif (18-60 tahun)',
+            '60+' => 'Senior (60+ tahun)'
+        ];
+
+        foreach ($kelompokUmur as $key => $value) {
+            if ($value > 0) {
+                $percentage = $totalOrang > 0 ? round(($value / $totalOrang) * 100, 1) : 0;
+                $breakdown[] = [
+                    'kategori' => $key,
+                    'label' => $labels[$key],
+                    'jumlah' => $value,
+                    'persentase' => $percentage
+                ];
+            }
+        }
+
+        $rangeText = $umurAwal === $umurAkhir 
+            ? "{$umurAwal} tahun" 
+            : "{$umurAwal} - {$umurAkhir} tahun";
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'kelompok_umur' => $kelompokUmur,
+                'total_orang' => $totalOrang,
+                'breakdown' => $breakdown,
+                'rentang' => [
+                    'awal' => $umurAwal,
+                    'akhir' => $umurAkhir,
+                    'text' => $rangeText
+                ]
+            ]
+        ]);
+    }
+
+    private function getKategoriUmur($umur)
+    {
+        if ($umur >= 0 && $umur < 5) {
+            return '0-5';
+        } elseif ($umur >= 5 && $umur < 12) {
+            return '5-12';
+        } elseif ($umur >= 12 && $umur < 18) {
+            return '12-18';
+        } elseif ($umur >= 18 && $umur < 60) {
+            return '18-60';
+        } else {
+            return '60+';
+        }
+    }
+
     private function kategorikanUmur($umur, &$kelompok)
     {
         if ($umur >= 0 && $umur < 5) {

@@ -28,6 +28,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::prefix('api')->group(function () {
+        Route::post('/dashboard/filter-kelompok-umur', [DashboardController::class, 'filterKelompokUmur'])
+            ->name('api.dashboard.filter-kelompok-umur');
+    });
     
     Route::get('/penghuni/import', [PenghuniController::class, 'import'])->name('penghuni.import');
     Route::post('/penghuni/import', [PenghuniController::class, 'importStore'])->name('penghuni.import.store');

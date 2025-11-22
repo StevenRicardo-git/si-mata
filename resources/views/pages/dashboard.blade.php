@@ -84,7 +84,6 @@
         </a>
     </div>
 
-    <!-- Quick Actions -->
     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-md p-6 mb-6 border border-blue-100">
         <div class="flex items-center justify-between mb-4">
             <div>
@@ -324,7 +323,18 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div class="bg-white rounded-xl shadow-md p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Sebaran Kelompok Umur Penghuni Beserta Keluarga</h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Sebaran Kelompok Umur Penghuni Beserta Keluarga</h2>
+                <button 
+                    onclick="KelompokUmurFilter.openModal()" 
+                    class="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-all transform hover:scale-105 active:scale-95 shadow-md"
+                    title="Filter berdasarkan rentang usia kustom">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    <span>Filter</span>
+                </button>
+            </div>
             <div style="position: relative; height: 300px;">
                 <canvas id="kelompokUmurChart"></canvas>
             </div>
@@ -334,6 +344,83 @@
             <h2 class="text-xl font-bold text-gray-800 mb-4">Distribusi Jenis Kelamin</h2>
             <div style="position: relative; height: 300px;">
                 <canvas id="jenisKelaminChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div id="kelompokUmurFilterModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style="backdrop-filter: blur(8px);">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-gradient-to-r from-blue-50 to-indigo-50 border-b-2 border-blue-200 p-6 flex items-center justify-between">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900">🔍 Filter Kelompok Umur</h3>
+                    <p class="text-sm text-gray-600 mt-1">Filter otomatis dijalankan 5 detik setelah Anda berhenti mengetik</p>
+                </div>
+                <button onclick="KelompokUmurFilter.closeModal()" class="p-2 hover:bg-white rounded-lg transition-colors">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-5">
+                    <h4 class="text-lg font-bold text-gray-900 mb-4">📊 Tentukan Rentang Usia</h4>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-gray-700">
+                                Usia Awal <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input
+                                    type="number"
+                                    id="umurAwal"
+                                    min="0"
+                                    max="150"
+                                    placeholder="Contoh: 18"
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-lg font-semibold"
+                                />
+                                <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-medium">tahun</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-gray-700">
+                                Usia Akhir <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input
+                                    type="number"
+                                    id="umurAkhir"
+                                    min="0"
+                                    max="150"
+                                    placeholder="Opsional"
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-lg font-semibold"
+                                />
+                                <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-medium">tahun</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <p class="text-xs text-blue-800">
+                            <strong>💡 Tips:</strong> Kosongkan "Usia Akhir" untuk filter 1 usia spesifik. Filter akan otomatis dijalankan setelah 5 detik tidak ada input.
+                        </p>
+                    </div>
+                </div>
+
+                <div id="previewContent" class="min-h-[200px]">
+                    <p class="text-gray-500 text-sm text-center py-8">Masukkan usia untuk melihat preview (otomatis setelah 5 detik)</p>
+                </div>
+            </div>
+
+            <div class="sticky bottom-0 bg-gray-50 border-t-2 border-gray-200 p-6 flex justify-end">
+                <button
+                    onclick="KelompokUmurFilter.closeModal()"
+                    class="px-6 py-3 bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-900 hover:to-blue-950 text-white font-bold rounded-lg transition-all transform hover:scale-105 active:scale-95 shadow-md"
+                >
+                    Tutup
+                </button>
             </div>
         </div>
     </div>
