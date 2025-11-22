@@ -253,6 +253,20 @@ button:disabled {
     color: #4B5563;
 }
 
+#nilaiJaminan {
+    padding-left: 2.5rem !important;
+}
+
+#nilaiJaminan::placeholder {
+    padding-left: 0;
+}
+
+.relative span {
+    pointer-events: none;
+    z-index: 10;
+}
+
+
 @media (max-width: 640px) {
     .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3 {
         grid-template-columns: 1fr;

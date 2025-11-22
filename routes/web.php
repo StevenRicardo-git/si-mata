@@ -76,4 +76,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
     
     Route::get('/audit', [AuditController::class, 'index'])->name('audit');
+
+    Route::get('/api/tarif-keringanan', function() {
+        return response()->json([
+            'success' => true,
+            'tarif' => config('tarif.keringanan'),
+            'tarif_air' => config('tarif.air')
+        ]);
+    });
 });

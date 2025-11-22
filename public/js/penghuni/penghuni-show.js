@@ -2,34 +2,13 @@ const PenghuniDetail = {
     selectedRusun: null,
     selectedBlok: null,
     tarifAir: 0,
+    tarifKeringanan: null,
 
-    tarifKeringanan: {
-        'A': { 
-            1: { dapat: 120000, tidak: 245000 },
-            2: { dapat: 120000, tidak: 235000 },
-            3: { dapat: 110000, tidak: 225000 },
-            4: { dapat: 100000, tidak: 220000 },
-            5: { dapat: 90000, tidak: 215000 }
-        },
-        'B': { 
-            1: { dapat: 120000, tidak: 245000 },
-            2: { dapat: 120000, tidak: 235000 },
-            3: { dapat: 110000, tidak: 225000 },
-            4: { dapat: 100000, tidak: 220000 },
-            5: { dapat: 90000, tidak: 215000 }
-        },
-        'C': { 
-            1: { dapat: 120000, tidak: 245000 },
-            2: { dapat: 120000, tidak: 235000 },
-            3: { dapat: 110000, tidak: 225000 },
-            4: { dapat: 100000, tidak: 220000 },
-            5: { dapat: 90000, tidak: 215000 }
-        },
-        'D': { 
-            1: { normal: 630000 },
-            2: { normal: 580000 },
-            3: { normal: 530000 }
-        }
+    async init() {
+        const tarif = await TarifService.init();
+        this.tarifKeringanan = tarif.keringanan;
+        
+        this.setupTanggalValidation();
     },
 
     async generateUnitOptions() {
@@ -223,15 +202,14 @@ const PenghuniDetail = {
         if (!tarifAirInput) return;
 
         if (this.selectedRusun === 'kraton') {
-            this.tarifAir = 60000;
+            this.tarifAir = TarifService.tarifAir.kraton;
         } else if (this.selectedRusun === 'mbr_tegalsari') {
-            this.tarifAir = 70000;
+            this.tarifAir = TarifService.tarifAir.mbr_tegalsari;
         } else {
             this.tarifAir = 0;
         }
 
         tarifAirInput.value = this.tarifAir > 0 ? new Intl.NumberFormat('id-ID').format(this.tarifAir) : '';
-        
         this.handleKeringananChange();
     },
 
@@ -636,7 +614,8 @@ const PenghuniDetail = {
 
 window.PenghuniDetail = PenghuniDetail;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await PenghuniDetail.init();
     const setupAutoSyncTanggal = () => {
         const tanggalMasukModal = document.getElementById('tanggalMasuk');
         const tanggalSipModal = document.getElementById('tanggal_sip');

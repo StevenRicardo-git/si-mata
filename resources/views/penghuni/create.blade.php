@@ -319,12 +319,6 @@
                             class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-gray-100 font-bold text-primary"
                             readonly>
                     </div>
-                    <p class="mt-1 text-xs text-gray-500">
-                        <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                        </svg>
-                        Nilai jaminan tidak termasuk dalam tarif sewa bulanan
-                    </p>
                 </div>
             </div>
 
@@ -341,5 +335,6 @@
 @endsection
 
 @push('scripts')
+<script src="{{ asset('js/penghuni/tarif-sewa.js') }}"></script>
 <script src="{{ asset('js/penghuni/penghuni-create.js') }}"></script>
 @endpush

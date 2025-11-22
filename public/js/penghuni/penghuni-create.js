@@ -6,34 +6,15 @@ const PenghuniCreate = {
     isAutoFilled: false,
     penghuniData: null,
     checkTimeout: null,
+    tarifKeringanan: null,
 
-    tarifKeringanan: {
-        'A': { 
-            1: { dapat: 120000, tidak: 245000 },
-            2: { dapat: 120000, tidak: 235000 },
-            3: { dapat: 110000, tidak: 225000 },
-            4: { dapat: 100000, tidak: 220000 },
-            5: { dapat: 90000, tidak: 215000 }
-        },
-        'B': { 
-            1: { dapat: 120000, tidak: 245000 },
-            2: { dapat: 120000, tidak: 235000 },
-            3: { dapat: 110000, tidak: 225000 },
-            4: { dapat: 100000, tidak: 220000 },
-            5: { dapat: 90000, tidak: 215000 }
-        },
-        'C': { 
-            1: { dapat: 120000, tidak: 245000 },
-            2: { dapat: 120000, tidak: 235000 },
-            3: { dapat: 110000, tidak: 225000 },
-            4: { dapat: 100000, tidak: 220000 },
-            5: { dapat: 90000, tidak: 215000 }
-        },
-        'D': { 
-            1: { normal: 630000 },
-            2: { normal: 580000 },
-            3: { normal: 530000 }
-        }
+    async init() {
+        const tarif = await TarifService.init();
+        this.tarifKeringanan = tarif.keringanan;
+        
+        this.initializePreSelectedUnit();
+        this.setupTanggalValidation();
+        this.setupNikAutoFill();
     },
 
     initializePreSelectedUnit() {
@@ -594,9 +575,11 @@ const PenghuniCreate = {
         if (!tarifAirInput) return;
 
         if (this.selectedRusun === 'kraton') {
-            this.tarifAir = 60000;
+            this.tarifAir = TarifService.tarifAir.kraton;
         } else if (this.selectedRusun === 'mbr_tegalsari') {
-            this.tarifAir = 70000;
+            this.tarifAir = TarifService.tarifAir.mbr_tegalsari;
+        } else if (this.selectedRusun === 'prototipe_tegalsari') {
+            this.tarifAir = TarifService.tarifAir.prototipe_tegalsari;
         } else {
             this.tarifAir = 0;
         }
@@ -690,12 +673,9 @@ const PenghuniCreate = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     window.PenghuniCreate = PenghuniCreate;
-    
-    PenghuniCreate.initializePreSelectedUnit();
-    PenghuniCreate.setupTanggalValidation();
-    PenghuniCreate.setupNikAutoFill();
+    await PenghuniCreate.init();
 
     ['nama', 'pasangan_nama'].forEach(id => {
         PenghuniCreate.setupUppercaseInput(document.getElementById(id));
@@ -711,9 +691,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const setupAutoSyncTanggalCreate = () => {
-    const tanggalMasuk = document.getElementById('tanggalMasuk');
-    const tanggalSip = document.getElementById('tanggal_sip');
-    const tanggalSps = document.getElementById('tanggal_sps');
+        const tanggalMasuk = document.getElementById('tanggalMasuk');
+        const tanggalSip = document.getElementById('tanggal_sip');
+        const tanggalSps = document.getElementById('tanggal_sps');
         
         if (tanggalMasuk && tanggalSip && tanggalSps) {
             tanggalMasuk.addEventListener('change', function() {
